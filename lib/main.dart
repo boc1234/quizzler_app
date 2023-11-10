@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:quizzler_app/question.dart';
+import 'package:rflutter_alert/rflutter_alert.dart';
 import 'quiz_brain.dart';
-
 
 QuizBrain quizBrain = QuizBrain();
 
@@ -42,13 +41,56 @@ class QuizPage extends StatefulWidget {
 
 class _QuizPageState extends State<QuizPage> {
   List<Icon> scoreKeeper = [];
+  void checkAnswers(bool userPickedAnswer) {
+    bool correctAnswer = quizBrain.getCorrectAnswer();
+    setState(() {
+      if (quizBrain.isFinished() == true) {
+        print(quizBrain.isFinished());
+        alertTest();
+      } else {
+        print(quizBrain.isFinished());
+        if (userPickedAnswer == correctAnswer) {
+          scoreKeeper.add(const Icon(
+            Icons.check,
+            color: Colors.green,
+          ));
+        } else {
+          scoreKeeper.add(const Icon(
+            Icons.close,
+            color: Colors.red,
+          ));
+        }
 
-  // List<Question> questionBank = [
-  //   Question(q: 'You can lead a cow down stairs but not up stairs.', a: false),
-  //   Question(q: 'Approximately one quarter of human bones are in the feet.', a: true),
-  //   Question(q: 'A slug\'s blood is green.', a: true),
-  // ];
+        quizBrain.nextQuestion();
+      }
+    });
+  }
 
+  void alertTest() {
+    Alert(
+      context: context,
+      type: AlertType.error,
+      title: "RFLUTTER ALERT",
+      desc: "Flutter is more awesome with RFlutter Alert.",
+      buttons: [
+        DialogButton(
+          onPressed: () {
+            setState(() {
+              scoreKeeper.clear();
+              quizBrain.reset();
+            });
+
+            Navigator.pop(context);
+          },
+          width: 120,
+          child: const Text(
+            "Cancle",
+            style: TextStyle(color: Colors.white, fontSize: 20),
+          ),
+        )
+      ],
+    ).show();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -56,7 +98,7 @@ class _QuizPageState extends State<QuizPage> {
       // mainAxisAlignment: MainAxisAlignment.spaceAround,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-         Expanded(
+        Expanded(
           flex: 5,
           child: Padding(
             padding: const EdgeInsets.all(10.0),
@@ -74,32 +116,10 @@ class _QuizPageState extends State<QuizPage> {
         ),
         Expanded(
           child: Padding(
-            padding: EdgeInsets.all(15.0),
+            padding: const EdgeInsets.all(15.0),
             child: TextButton(
               onPressed: () {
-                bool correctAnswer = quizBrain.getCorrectAnswer();
-                if(correctAnswer == true){
-                  print('correct');
-                  setState(() {
-                    scoreKeeper.add(Icon(
-                      Icons.check,
-                      color: Colors.green,
-                    ));
-                  });
-                }else{
-                  print('wrong');
-                  setState(() {
-                    scoreKeeper.add(Icon(
-                      Icons.close,
-                      color: Colors.red,
-                    ));
-                  });
-                }
-                setState(() {
-
-                  quizBrain.nextQuestion();
-
-                });
+                checkAnswers(true);
               },
               style: ButtonStyle(
                 backgroundColor: MaterialStateProperty.all<Color>(Colors.green),
@@ -116,22 +136,10 @@ class _QuizPageState extends State<QuizPage> {
         ),
         Expanded(
           child: Padding(
-            padding: EdgeInsets.all(15.0),
+            padding: const EdgeInsets.all(15.0),
             child: TextButton(
               onPressed: () {
-                bool correctAnswer = quizBrain.getCorrectAnswer();
-                if(correctAnswer == true){
-                  print('correct');
-                }else{
-                  print('wrong');
-                }
-                setState(() {
-                  scoreKeeper.add(Icon(
-                    Icons.close,
-                    color: Colors.red,
-                  ));
-                  quizBrain.nextQuestion();
-                });
+                checkAnswers(false);
               },
               style: ButtonStyle(
                 backgroundColor: MaterialStateProperty.all<Color>(Colors.red),
